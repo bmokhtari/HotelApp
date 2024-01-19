@@ -1,0 +1,60 @@
+name: Backend Testing
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "backend/**"
+  pull_request:
+    paths:
+      - "backend/**"
+  
+permissions:
+  contents: read
+
+jobs:
+  # service test job
+  service-test:
+    name: "Service Tests"
+    env:
+      working-directory: ./backend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Install Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 8.2.1
+    - name: "Run all service tests"
+      run: |
+        gradle test --tests '*Service*'
+      working-directory: ${{ env.working-directory }}
+        
+  # integration test job
+  integration-test:
+    name: "Integration Tests"
+    env:
+      working-directory: ./backend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Install Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: 8.2.1
+    - name: "Run all in tests"
+      run: |
+        gradle test --tests '*Integration*'
+      working-directory: ${{ env.working-directory }}
+
+
